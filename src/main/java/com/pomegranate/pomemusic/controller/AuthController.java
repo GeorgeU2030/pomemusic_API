@@ -12,6 +12,8 @@ import com.pomegranate.pomemusic.dto.RegisterDto;
 import com.pomegranate.pomemusic.dto.ResponseDto;
 import com.pomegranate.pomemusic.service.AuthService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -21,12 +23,12 @@ public class AuthController {
 
     @PostMapping(value = "login")
     public ResponseEntity<ResponseDto> login (@RequestBody LoginDto login){
-        return ResponseEntity.ok(authService.login(login));
+        return authService.login(login);
     }
 
     @PostMapping(value = "register")
-    public ResponseEntity<ResponseDto> register (@RequestBody RegisterDto register){
-        return ResponseEntity.ok(authService.register(register));
+    public ResponseEntity<ResponseDto> register (@Valid @RequestBody RegisterDto register){
+        return authService.register(register);
     }
 
 }
