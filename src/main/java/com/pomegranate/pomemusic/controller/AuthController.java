@@ -1,6 +1,5 @@
 package com.pomegranate.pomemusic.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,22 +12,24 @@ import com.pomegranate.pomemusic.dto.ResponseDto;
 import com.pomegranate.pomemusic.service.AuthService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
     
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    @PostMapping(value = "login")
-    public ResponseEntity<ResponseDto> login (@RequestBody LoginDto login){
-        return authService.login(login);
+    @PostMapping("/login")
+    public ResponseEntity<ResponseDto> login (@Valid @RequestBody LoginDto login){
+        return this.authService.login(login);
     }
 
-    @PostMapping(value = "register")
+    @PostMapping("/register")
     public ResponseEntity<ResponseDto> register (@Valid @RequestBody RegisterDto register){
-        return authService.register(register);
+        System.out.println("AQUIIIIIIIIII"+register);
+        return this.authService.register(register);
     }
 
 }
