@@ -19,9 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
     
     private final UserRepository repository;
-
     private final TokenService tokenService;
-
     private final PasswordEncoder passwordEncoder;
 
     public ResponseEntity<ResponseDto> login(LoginDto body) {
@@ -34,10 +32,19 @@ public class AuthService {
     }
 
     public ResponseEntity<ResponseDto> register(RegisterDto body) {
+
+        if (this.repository.existsByEmail(body.email())) {
+            return ResponseEntity.badRequest().body(new ResponseDto("Email already exists", ""));
+        }
+
+        if (this.repository.existsByUsername(body.username())) {
+            return ResponseEntity.badRequest().body(new ResponseDto("Username already exists", ""));
+        }
+        
         User user = new User();
         user.setEmail(body.email());
         user.setPassword(passwordEncoder.encode(body.password()));
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
         user.setName(body.name());
         user.setUsername(body.username());
         user.setYearOfBirth(body.yearOfBirth());

@@ -28,7 +28,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ResponseDto> register (@Valid @RequestBody RegisterDto register){
-        System.out.println("AQUIIIIIIIIII"+register);
         return this.authService.register(register);
     }
 

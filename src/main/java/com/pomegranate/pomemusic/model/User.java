@@ -1,5 +1,6 @@
 package com.pomegranate.pomemusic.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,9 +25,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String name;
+
+    @Column(unique = true)
     private String email;
+
     private String password;
+
+    @Column(unique = true)
     private String username;
+    
     private Integer yearOfBirth;
     private String avatar;
     private String favoriteGenre;
