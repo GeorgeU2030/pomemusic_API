@@ -1,5 +1,6 @@
 package com.pomegranate.pomemusic.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,16 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public ResponseEntity<ResponseDto> login(LoginDto body) {
-        User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = this.repository.findByEmail(body.email()).orElse(null);
+        if(user == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseDto("User not found", ""));
+        }
         if(passwordEncoder.matches(body.password(), user.getPassword())) {
             String token = this.tokenService.generateToken(user);
             return ResponseEntity.ok(new ResponseDto(user.getName(), token));
+        }else{
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseDto("Wrong password", ""));
         }
-        return ResponseEntity.badRequest().build();
     }
 
     public ResponseEntity<ResponseDto> register(RegisterDto body) {
@@ -51,7 +56,7 @@ public class AuthService {
         user.setAvatar(body.avatar());
         user.setFavoriteGenre("");
         this.repository.save(user);
-        String token = this.tokenService.generateToken(user);
+        String token = "";
         return ResponseEntity.ok(new ResponseDto(user.getName(), token));
     }
 }
