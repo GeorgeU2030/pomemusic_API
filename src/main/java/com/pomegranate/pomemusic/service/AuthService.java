@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.pomegranate.pomemusic.dto.LoginDto;
 import com.pomegranate.pomemusic.dto.RegisterDto;
 import com.pomegranate.pomemusic.dto.ResponseDto;
+import com.pomegranate.pomemusic.dto.ResponseUserDto;
+import com.pomegranate.pomemusic.dto.UserDto;
 import com.pomegranate.pomemusic.jwt.TokenService;
 import com.pomegranate.pomemusic.model.Role;
 import com.pomegranate.pomemusic.model.User;
@@ -23,16 +25,18 @@ public class AuthService {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<ResponseDto> login(LoginDto body) {
+    public ResponseEntity<ResponseUserDto> login(LoginDto body) {
         User user = this.repository.findByEmail(body.email()).orElse(null);
         if(user == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseDto("User not found", ""));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseUserDto(null, "", "User not found"));
         }
         if(passwordEncoder.matches(body.password(), user.getPassword())) {
             String token = this.tokenService.generateToken(user);
-            return ResponseEntity.ok(new ResponseDto(user.getName(), token));
+            return ResponseEntity.ok(new ResponseUserDto(new UserDto(user.getName(), 
+            user.getEmail(), user.getUsername(), user.getYearOfBirth(), 
+            user.getAvatar(), user.getFavoriteGenre()), token, "The user was found"));
         }else{
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseDto("Wrong password", ""));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseUserDto(null, "", "Wrong password"));
         }
     }
 

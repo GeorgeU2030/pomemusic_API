@@ -3,6 +3,7 @@ package com.pomegranate.pomemusic.jwt;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.pomegranate.pomemusic.model.User;
 
 
@@ -41,11 +43,16 @@ public class TokenService {
     public String validateToken (String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secretkey);
-            return JWT.require(algorithm)
+            DecodedJWT jwt = JWT.require(algorithm)
                     .withIssuer("auth0")
                     .build()
-                    .verify(token)
-                    .getSubject();
+                    .verify(token);
+            
+            if (jwt.getExpiresAt().before(new Date())){
+                return null;
+            }        
+            return jwt.getSubject();
+            
         } catch (JWTVerificationException exception) {
             return null;
         }
